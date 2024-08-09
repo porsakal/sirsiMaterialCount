@@ -1,13 +1,16 @@
 # Material Stat File Processor
 # Processes txt and creates json format
-from msLogger import logger
-from msConfig import maStConf
 from pprint import pp
+from msConfig import maStConf
 
 byLocation = {}
 allTypes = {
-    "BOOK": ["ARTBOOK", "BOOK", "EASYBOOK", "MANUSCRIPT", "PUBTHESIS", "RES_ARTBO", "RES_BOOK", "RES_REFBK", "WEEKLYBOOK"]
-    # Diğer kategoriler burada eklenebilir
+    "BOOK": ["ARTBOOK", "BOOK", "ILL-BOOK", "ILLBOOKINT","EASYBOOK", "MANUSCRIPT", "PUBTHESIS", "RES_ARTBO", "RES_BOOK", "RES_REFBK", "WEEKLYBOOK"],
+    "ILL": [  "ILL_IN_ART", "ILL_NA_ART"]
+}
+allLocations = {
+    "ALLSPECIAL": ["INALCIK", "H-ALIYUCEL", "SPECIALCOL"]
+    
 }
 
 with open(maStConf.fileToProcess, "r", encoding="utf-8") as file:
@@ -20,24 +23,32 @@ for info in content:
     itemType = information[1]
     location = information[2]
     
-    # itemType'ın hangi kategoriye ait olduğunu bulma
-    found_category = None
-    for category, types in allTypes.items():
-        if itemType in types:
-            found_category = category
+    # Determine the main type category
+    typeCategory = None
+    for mainType, typeList in allTypes.items():
+        if itemType in typeList:
+            typeCategory = mainType
             break
-    
-    if found_category is None:
-        # Eğer itemType herhangi bir kategoriye ait değilse, kendisi bir kategori olur
-        found_category = itemType
-    
-    # Sözlük yapısını oluşturma ve toplama
+
+    # If not found in allTypes, use the itemType itself as the category
+    if typeCategory is None:
+        typeCategory = itemType
+
+    # Update byLocation dictionary
     if location not in byLocation:
         byLocation[location] = {}
-    
-    if found_category not in byLocation[location]:
-        byLocation[location][found_category] = 0
-    
-    byLocation[location][found_category] += count
+    if typeCategory not in byLocation[location]:
+        byLocation[location][typeCategory] = 0
+    byLocation[location][typeCategory] += count
 
+    # Check for combined locations
+    for combinedLoc, locList in allLocations.items():
+        if location in locList:
+            if combinedLoc not in byLocation:
+                byLocation[combinedLoc] = {}
+            if typeCategory not in byLocation[combinedLoc]:
+                byLocation[combinedLoc][typeCategory] = 0
+            byLocation[combinedLoc][typeCategory] += count
+
+# Display the final byLocation dictionary
 pp(byLocation)
