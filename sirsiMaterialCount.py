@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-
+from pprint import pp
 fileToProcess="inputfile.txt"
 
 
@@ -58,6 +58,42 @@ def createByLocation(content) -> object:
                 byLocation[combinedLoc][typeCategory] += count
     return byLocation
 
+def createByLocationFiltered(content) -> object:
+    byLocation = {}
+    for info in content:
+        cleared = info.lstrip().rstrip("|\n").replace(" ", "|")
+        information = cleared.split("|")
+        count = int(information[0])
+        itemType = information[1]
+        location = information[2]
+        
+        # Determine the main type category
+        typeCategory = None
+        for mainType, typeList in allTypes.items():
+            if itemType in typeList:
+                typeCategory = mainType
+                break
+
+        # If not found in allTypes, use the itemType itself as the category
+        if typeCategory is None:
+            typeCategory = "OTHER"
+
+        # Update byLocation dictionary
+        if location not in byLocation:
+            byLocation[location] = {}
+        if typeCategory not in byLocation[location]:
+            byLocation[location][typeCategory] = 0
+        byLocation[location][typeCategory] += count
+
+        # Check for combined locations
+        for combinedLoc, locList in allLocations.items():
+            if location in locList:
+                if combinedLoc not in byLocation:
+                    byLocation[combinedLoc] = {}
+                if typeCategory not in byLocation[combinedLoc]:
+                    byLocation[combinedLoc][typeCategory] = 0
+                byLocation[combinedLoc][typeCategory] += count
+    return byLocation
 
 def createByLocationFull(content) -> object:
     byLocationFull = {}
@@ -86,6 +122,7 @@ def createByLocationFull(content) -> object:
                 byLocationFull[combinedLoc][itemType] += count
     return byLocationFull
 byLocation=createByLocation(content)
+byLocationFiltered=createByLocationFiltered(content)
 byLocationFull=createByLocationFull(content)
 app = FastAPI()
 
@@ -103,6 +140,15 @@ def get_count_by_location_uncategorized(location:str):
     else:
         "Location not exist"
 
+@app.get("/getCount/byLocation/filtered/{location}")
+def get_count_by_location_filtered(location: str):
+    if location in byLocationFiltered.keys():
+        return byLocationFiltered[location]
+    else:
+        return "Location not exist"
+
+
+pp(byLocationFiltered)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
