@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 import uvicorn
 
-fileToProcess="test.txt"
+fileToProcess="inputfile.txt"
 
 
 allTypes = {
