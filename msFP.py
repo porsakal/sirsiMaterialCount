@@ -1,19 +1,25 @@
 # Material Stat File Processor
 # Processes txt and creates json format
 from pprint import pp
-from msConfig import maStConf
+
+fileToProcess="test.txt"
 
 byLocation = {}
 allTypes = {
-    "BOOK": ["ARTBOOK", "BOOK", "ILL-BOOK", "ILLBOOKINT","EASYBOOK", "MANUSCRIPT", "PUBTHESIS", "RES_ARTBO", "RES_BOOK", "RES_REFBK", "WEEKLYBOOK"],
-    "ILL": [  "ILL_IN_ART", "ILL_NA_ART"]
+    "BOOK": ["ARTBOOK", "BOOK", "ILL-BOOK", "ILLBOOKINT","EASYBOOK", "MANUSCRIPT", "PUBTHESIS", "RES_ARTBO", "RES_BOOK", "RES_REFBK", "WEEKLYBOOK","REF-BOOK","OFFPRINT","BRAILLE","PRINTMUSIC"],
+    "ILL": [  "ILL_IN_ART", "ILL_NA_ART"],
+    "MULTIMEDIA": ["AUDIOBOOK","CD","CD-ROM","DISKETTE","DVD","SUPCD","SUPCDROM","SUPDVD","SUPVCD","SUPVIDEO","PHOTO","VCD","VIDEOCASS","SUPCASS","CASSETTE","BLU-RAYDIS","AV-EQUIP","SOUNDTAPE"],
+    "JOURNAL": ["BARTJOURNA","BJOURNAL","JOURNAL","JOURNAL1"],
+    "ROOM": ["GS-ROOM","MMGS-ROOM","MMVB-ROOM"]
 }
 allLocations = {
-    "ALLSPECIAL": ["INALCIK", "H-ALIYUCEL", "SPECIALCOL"]
+    "ALLSPECIAL": ["INALCIK", "H-ALIYUCEL", "SPECIALCOL"],
+    "ROOMS": ["GSROOMS","MMROOMS"],
+    "STORAGES": ["B111STORAG","CATSTORAGE","REFSTORAGE","STORAGECOL"]
     
 }
 
-with open(maStConf.fileToProcess, "r", encoding="utf-8") as file:
+with open(fileToProcess, "r", encoding="utf-8") as file:
     content = file.readlines()
 
 for info in content:
@@ -49,6 +55,4 @@ for info in content:
             if typeCategory not in byLocation[combinedLoc]:
                 byLocation[combinedLoc][typeCategory] = 0
             byLocation[combinedLoc][typeCategory] += count
-
-# Display the final byLocation dictionary
 pp(byLocation)
