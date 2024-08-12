@@ -147,8 +147,5 @@ def get_count_by_location_filtered(location: str):
     else:
         return "Location not exist"
 
-
-pp(byLocationFiltered)
-
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=5000)
