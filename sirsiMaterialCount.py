@@ -127,25 +127,27 @@ byLocationFull=createByLocationFull(content)
 app = FastAPI()
 
 @app.get("/getCount/byLocation/{location}")
-def get_count_by_location(location: str):
-    if location in byLocation.keys():
-        return byLocation[location]
+def get_count_by_location_filtered(location: str):
+    if location.upper() in byLocationFiltered.keys():
+        return byLocationFiltered[location.upper()]
     else:
         return "Location not exist"
 
-@app.get("/getCount/byLocation/unCat/{location}")
+@app.get("/getCount/byLocation/{location}/semiCat")
+def get_count_by_location(location: str):
+    if location.upper() in byLocation.keys():
+        return byLocation[location.upper()]
+    else:
+        return "Location not exist"
+
+@app.get("/getCount/byLocation/{location}/unCat")
 def get_count_by_location_uncategorized(location:str):
-    if location in byLocationFull.keys():
-        return byLocationFull[location]
+    if location.upper() in byLocationFull.keys():
+        return byLocationFull[location.upper()]
     else:
         "Location not exist"
 
-@app.get("/getCount/byLocation/filtered/{location}")
-def get_count_by_location_filtered(location: str):
-    if location in byLocationFiltered.keys():
-        return byLocationFiltered[location]
-    else:
-        return "Location not exist"
+
 
 
 pp(byLocationFiltered)
